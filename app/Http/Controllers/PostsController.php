@@ -80,6 +80,7 @@ class PostsController extends Controller
     public function destroy($id)
     {
         //
+
     }
 
     public function contactView()
