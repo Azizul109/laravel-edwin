@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Country;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostsController;
@@ -156,4 +158,63 @@ Route::get('/restore', function (){
 
 Route::get('/forcedelete', function (){
    Post::withTrashed()->where('id', 1)->forceDelete();
+});
+
+
+
+//Eloquent relationship
+
+//one to one relation
+Route::get('/user/{id}/post', function ($id){
+
+//    return User::find($id)->post;
+    return User::find($id)->post->title;
+});
+
+//inverse relation
+Route::get('/post/{id}/user', function ($id){
+
+    return Post::find($id)->user->name;
+});
+
+//One to Many relation
+Route::get('/posts', function (){
+
+    $user = User::find(1);
+    foreach ($user->posts as $post)
+    {
+        return $post->title; //return korle 1ta kore 1ta kore show korbe, echo korle onek gula kore return korbe
+    }
+});
+
+//Many to Many relationship
+Route::get('/user/{id}/role', function ($id){
+    $user = User::find($id)->roles()->orderBy('id', 'desc')->get();
+
+    return $user;
+//    foreach ($user->roles as $role)
+//    {
+//        return $role->name;
+//    }
+});
+
+
+//Accessing the intermediate pivot table
+Route::get('/user/pivot', function (){
+   $user = User::find(1);
+
+   foreach ($user->roles as $role)
+   {
+       return $role->pivot->created_at;
+   }
+});
+
+//HasMany relationship
+Route::get('/user/country', function (){
+    $country = Country::find(1);
+
+    foreach ($country->posts as $post)
+    {
+        return $post->title;
+    }
 });
